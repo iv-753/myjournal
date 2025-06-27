@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getLogs, deleteLog, LogEntry } from '@/lib/storage';
-import UserNav from "./UserNav";
+import UserNav from "../UserNav";
 
 export default function HistoryPage() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
