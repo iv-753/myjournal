@@ -1,37 +1,44 @@
 "use client";
 import { useEffect, useState } from "react";
-import { createClient, User } from "@supabase/supabase-js";
+import { User } from "@supabase/supabase-js"; // 只导入User类型
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase";
 
+/**
+ * 用户导航栏组件：显示用户头像、用户名、登录/退出按钮
+ * - 已登录：显示头像、用户名、退出按钮
+ * - 未登录：显示登录按钮（在登录页不显示）
+ * - 头像加载失败或无头像时显示默认SVG
+ * - 监听Supabase登录状态变化，自动更新用户信息
+ */
 export default function UserNav() {
-  const supabase = getSupabaseClient();
-  const [user, setUser] = useState<User | null>(null);
-  const [imgError, setImgError] = useState(false);
+  const supabase = getSupabaseClient(); // 获取Supabase客户端
+  const [user, setUser] = useState<User | null>(null); // 当前用户信息
+  const [imgError, setImgError] = useState(false); // 头像加载失败标记
   const pathname = usePathname(); // 获取当前路径
 
   useEffect(() => {
-    // 获取当前用户
+    // 获取当前用户信息
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user);
     });
 
-    // 监听登录状态变化
+    // 监听登录状态变化，自动更新用户信息
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
     return () => {
-      listener?.subscription.unsubscribe();
+      listener?.subscription.unsubscribe(); // 组件卸载时取消监听
     };
-  }, []);
+  }, [supabase.auth]); // 依赖supabase.auth，避免react-hooks/exhaustive-deps警告
 
+  // 退出登录
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
-    // 可选：刷新页面
-    window.location.reload();
+    window.location.reload(); // 可选：刷新页面
   };
 
   // 默认头像 SVG
@@ -43,7 +50,7 @@ export default function UserNav() {
     </svg>
   );
 
-  // 已登录：只显示头像、用户名、退出按钮
+  // 已登录：显示头像、用户名、退出按钮
   if (user) {
     return (
       <div className="flex items-center gap-4 bg-white/80 dark:bg-gray-800/80 px-4 py-1 rounded-full shadow border border-gray-200 dark:border-gray-700">
