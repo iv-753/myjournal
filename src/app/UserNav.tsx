@@ -3,13 +3,10 @@ import { useEffect, useState } from "react";
 import { createClient, User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { getSupabaseClient } from "@/lib/supabase";
 
 export default function UserNav() {
+  const supabase = getSupabaseClient();
   const [user, setUser] = useState<User | null>(null);
   const [imgError, setImgError] = useState(false);
   const pathname = usePathname(); // 获取当前路径
