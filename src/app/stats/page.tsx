@@ -71,7 +71,7 @@ export default function StatsPage() {
       .sort((a, b) => b.getTime() - a.getTime()); // 从大到小
     
     let streakCount = 0;
-    let cur = new Date();
+    const cur = new Date();
     cur.setHours(0,0,0,0); // 只看日期
     for (let i = 0; i < daysArr.length; i++) {
       if (daysArr[i].getTime() === cur.getTime()) {
@@ -117,7 +117,7 @@ export default function StatsPage() {
 
           {selectedProject && (
             <div className="mt-8 text-center bg-gray-50 p-6 rounded-lg">
-              <p className="text-gray-600 mb-4">项目 "{selectedProject}" 的统计数据：</p>
+              <p className="text-gray-600 mb-4">项目 &quot;{selectedProject}&quot; 的统计数据：</p>
               <div className="flex justify-around items-center">
                 <div>
                   <p className="text-gray-500 text-sm">总工作时长</p>

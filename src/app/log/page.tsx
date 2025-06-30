@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { saveLog, getLogs } from '@/lib/storage';
-import type { WorkTime } from '@/lib/storage';
 
 type FormData = {
   project: string;

@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getLogById, updateLog, LogEntry } from '@/lib/storage';
-import type { WorkTime } from '@/lib/storage';
 
 type FormData = {
   project: string;
