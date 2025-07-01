@@ -34,14 +34,6 @@ export default function HistoryPage() {
           <h1 className="text-3xl font-bold text-gray-800">
             我的历史日志
           </h1>
-          <div className="flex items-center gap-4">
-            <Link href="/stats" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300">
-              时长统计
-            </Link>
-            <Link href="/log" className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300">
-              &#43; 写新日志
-            </Link>
-          </div>
         </div>
         
         <div className="absolute top-6 right-8 z-50">

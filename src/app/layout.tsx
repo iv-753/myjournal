@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 // import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import UserNav from "./UserNav";
+import MobileMenu from "./MobileMenu";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -26,8 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <div className="absolute top-6 right-8 z-50">
+        <div className="absolute top-6 right-8 z-50 hidden md:block">
           <UserNav />
+        </div>
+        <div className="absolute top-6 right-8 z-50 md:hidden">
+          <MobileMenu />
         </div>
         {children}
       </body>

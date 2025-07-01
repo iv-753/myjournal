@@ -4,6 +4,7 @@ import { User } from "@supabase/supabase-js"; // 只导入User类型
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase";
+import Image from "next/image";
 
 /**
  * 用户导航栏组件：显示用户头像、用户名、登录/退出按钮
@@ -56,9 +57,11 @@ export default function UserNav() {
       <div className="flex items-center gap-4 bg-white/80 dark:bg-gray-800/80 px-4 py-1 rounded-full shadow border border-gray-200 dark:border-gray-700">
         {/* 头像优化：加载失败或无头像时显示默认SVG */}
         {user.user_metadata?.avatar_url && !imgError ? (
-          <img
+          <Image
             src={user.user_metadata.avatar_url}
             alt="avatar"
+            width={36}
+            height={36}
             className="w-9 h-9 rounded-full border object-cover"
             onError={() => setImgError(true)}
           />
