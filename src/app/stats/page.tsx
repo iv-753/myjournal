@@ -3,6 +3,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { getLogs, LogEntry } from '@/lib/storage';
+import { getSupabaseClient } from '@/lib/supabase';
+import { getCloudLogs } from '@/lib/supabase';
+import { User } from '@supabase/supabase-js';
 
 // Helper function to format total minutes into a readable string
 function formatDuration(totalMinutes: number): string {
@@ -28,10 +31,39 @@ export default function StatsPage() {
   const [totalDuration, setTotalDuration] = useState<number>(0);
   const [workingDays, setWorkingDays] = useState<number>(0);
   const [streak, setStreak] = useState<number>(0);
+  const [user, setUser] = useState<User | null>(null); // 当前用户
+  const [loading, setLoading] = useState(true); // 加载状态
 
+  // 获取当前登录用户
   useEffect(() => {
-    setLogs(getLogs());
+    const supabase = getSupabaseClient();
+    supabase.auth.getUser().then(({ data }: { data: { user: User | null } }) => {
+      setUser(data.user);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event: string, session: { user: User | null } | null) => {
+      setUser(session?.user ?? null);
+    });
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
   }, []);
+
+  // 根据登录状态拉取日志
+  useEffect(() => {
+    async function fetchLogs() {
+      setLoading(true);
+      if (user) {
+        // 已登录，拉取云端日志
+        const cloudLogs = await getCloudLogs(user.id);
+        setLogs(cloudLogs);
+      } else {
+        // 未登录，拉取本地日志
+        setLogs(getLogs());
+      }
+      setLoading(false);
+    }
+    fetchLogs();
+  }, [user]);
 
   // Get a unique list of project names for the dropdown
   const projectNames = useMemo(() => {
@@ -97,6 +129,9 @@ export default function StatsPage() {
           </Link>
         </div>
 
+        {loading ? (
+          <div className="text-center py-16 bg-white rounded-lg shadow-md">加载中...</div>
+        ) : (
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="mb-6">
             <label htmlFor="project-select" className="block text-lg font-semibold text-gray-700 mb-2">
@@ -143,6 +178,7 @@ export default function StatsPage() {
             </div>
           )}
         </div>
+        )}
       </div>
     </main>
   );

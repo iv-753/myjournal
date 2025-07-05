@@ -134,4 +134,30 @@ export function deleteLog(logId: string): void {
   } catch (error) {
     console.error('Failed to delete log from localStorage', error);
   }
+}
+
+// 获取本地所有日志
+export function getLocalLogs(): LogEntry[] {
+  // 从 localStorage 读取 logs，若不存在则返回空数组
+  const logs = localStorage.getItem('logs');
+  return logs ? JSON.parse(logs) : [];
+}
+
+// 保存所有日志到本地
+export function setLocalLogs(logs: LogEntry[]) {
+  // 将日志数组转为 JSON 字符串存储到 localStorage
+  localStorage.setItem('logs', JSON.stringify(logs));
+}
+
+// 清空本地日志
+export function clearLocalLogs() {
+  // 移除 localStorage 中的 logs 项
+  localStorage.removeItem('logs');
+}
+
+// 判断本地是否有日志
+export function hasLocalLogs(): boolean {
+  // 判断 localStorage 中 logs 是否存在且不为空
+  const logs = getLocalLogs();
+  return logs.length > 0;
 } 

@@ -4,27 +4,56 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getLogs, deleteLog, LogEntry } from '@/lib/storage';
+import { getSupabaseClient } from '@/lib/supabase';
+import { getCloudLogs, deleteCloudLog } from '@/lib/supabase';
+import { User } from '@supabase/supabase-js';
 import UserNav from "../UserNav";
 
 export default function HistoryPage() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    // Client-side effect to fetch logs from localStorage
-    setLogs(getLogs().reverse()); // Show newest logs first
+    const supabase = getSupabaseClient();
+    supabase.auth.getUser().then(({ data }: { data: { user: User | null } }) => {
+      setUser(data.user);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event: string, session: { user: User | null } | null) => {
+      setUser(session?.user ?? null);
+    });
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
   }, []);
 
-  const handleDelete = (logId: string) => {
-    // Add a confirmation dialog before deleting
+  useEffect(() => {
+    async function fetchLogs() {
+      setLoading(true);
+      if (user) {
+        const cloudLogs = await getCloudLogs(user.id);
+        setLogs(cloudLogs);
+      } else {
+        setLogs(getLogs().reverse());
+      }
+      setLoading(false);
+    }
+    fetchLogs();
+  }, [user]);
+
+  const handleDelete = async (logId: string) => {
     if (window.confirm('您确定要永久删除这条日志吗？')) {
+      if (user) {
+        await deleteCloudLog(logId, user.id);
+        setLogs((currentLogs) => currentLogs.filter((log) => log.id !== logId));
+      } else {
       deleteLog(logId);
-      // Update the state to remove the log from the UI instantly
       setLogs((currentLogs) => currentLogs.filter((log) => log.id !== logId));
+      }
     }
   };
 
-  // Define a base style for the buttons to ensure consistency
   const buttonStyle = "inline-block text-center text-sm font-semibold px-3 py-1 rounded-md transition-colors duration-200 border bg-white border-gray-300 text-gray-700";
 
   return (
@@ -40,7 +69,9 @@ export default function HistoryPage() {
           <UserNav />
         </div>
         
-        {logs.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-16 bg-white rounded-lg shadow-md">加载中...</div>
+        ) : logs.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-lg shadow-md">
             <p className="text-gray-500">还没有任何日志记录。</p>
             <p className="mt-2 text-sm text-gray-400">

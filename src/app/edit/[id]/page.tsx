@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getLogById, updateLog, LogEntry } from '@/lib/storage';
+import { getSupabaseClient } from '@/lib/supabase';
+import { getCloudLogs, updateCloudLog } from '@/lib/supabase';
+import { User } from '@supabase/supabase-js';
 
 type FormData = {
   project: string;
@@ -21,14 +24,48 @@ export default function EditPage() {
   const [originalLog, setOriginalLog] = useState<LogEntry | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   
   const params = useParams();
   const router = useRouter();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
   useEffect(() => {
+    const supabase = getSupabaseClient();
+    supabase.auth.getUser().then(({ data }: { data: { user: User | null } }) => {
+      setUser(data.user);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event: string, session: { user: User | null } | null) => {
+      setUser(session?.user ?? null);
+    });
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    async function fetchLog() {
+      setIsLoading(true);
     if (!id) return;
-    
+      if (user) {
+        const cloudLogs = await getCloudLogs(user.id);
+        const log = cloudLogs.find(l => l.id === id);
+        if (log) {
+          setOriginalLog(log);
+          setFormData({
+            project: log.project,
+            workTime: {
+              duration: log.workTime.duration,
+              unit: log.workTime.unit
+            },
+            gains: log.gains,
+            challenges: log.challenges,
+            plan: log.plan
+          });
+        } else {
+          setError('找不到指定的日志记录。');
+        }
+      } else {
     const log = getLogById(id);
     if (log) {
       setOriginalLog(log);
@@ -44,9 +81,12 @@ export default function EditPage() {
       });
     } else {
       setError('找不到指定的日志记录。');
+        }
     }
     setIsLoading(false);
-  }, [id]);
+    }
+    fetchLog();
+  }, [id, user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -66,7 +106,7 @@ export default function EditPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!formData || !originalLog) return;
     
@@ -88,18 +128,27 @@ export default function EditPage() {
       },
     };
 
+    if (user) {
+      const success = await updateCloudLog(updatedLogData, user.id);
+      if (success) {
+        alert('日志更新成功！');
+        router.push('/history');
+      } else {
+        alert('更新失败！可能当天已存在同名项目的日志。');
+      }
+    } else {
     const wasUpdated = updateLog(updatedLogData);
-
     if (wasUpdated) {
       alert('日志更新成功！');
       router.push('/history');
     } else {
       alert('更新失败！可能当天已存在同名项目的日志。');
+      }
     }
   };
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">正在加载...</div>;
+    return <div className="min-h-screen flex items-center justify-center">加载中...</div>;
   }
   
   if (error) {
@@ -115,7 +164,6 @@ export default function EditPage() {
      return <div className="min-h-screen flex items-center justify-center">无法加载表单数据。</div>;
   }
 
-  // Reusing FormField structure from main page for consistency
   const FormField = ({ id, label, subLabel, placeholder, isTextarea = false }: { id: 'project' | 'gains' | 'challenges' | 'plan'; label: string; subLabel: string; placeholder: string; isTextarea?: boolean;}) => (
     <div className="mb-8">
       <label htmlFor={id} className="block mb-2 text-lg font-semibold text-gray-800">{label}</label>

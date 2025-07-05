@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase";
 import Image from "next/image";
+import { getLocalLogs, clearLocalLogs } from '@/lib/storage';
+import { uploadLogToCloud, cloudHasLog } from '@/lib/supabase'; // 你需要实现这两个方法
 
 /**
  * 用户导航栏组件：显示用户头像、用户名、登录/退出按钮
@@ -21,12 +23,12 @@ export default function UserNav() {
 
   useEffect(() => {
     // 获取当前用户信息
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(({ data }: { data: { user: User | null } }) => {
       setUser(data.user);
     });
 
     // 监听登录状态变化，自动更新用户信息
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((_event: string, session: { user: User | null } | null) => {
       setUser(session?.user ?? null);
     });
 
@@ -50,6 +52,29 @@ export default function UserNav() {
       <ellipse cx="20" cy="30" rx="10" ry="6" fill="#d1d5db" />
     </svg>
   );
+
+  // 登录成功后
+  useEffect(() => {
+    if (user) { // user 为当前登录用户对象
+      // 检查本地是否有日志
+      const localLogs = getLocalLogs();
+      if (localLogs.length > 0) {
+        // 遍历本地日志
+        localLogs.forEach(async (log) => {
+          // 检查云端是否已有该日志（根据唯一ID）
+          const exists = await cloudHasLog(log.id, user.id);
+          if (!exists) {
+            // 上传日志到云端，带上用户ID
+            await uploadLogToCloud(log, user.id);
+          }
+        });
+        // 全部上传后清空本地日志
+        clearLocalLogs();
+        // 可选：提示用户同步完成
+        alert('本地日志已同步到云端！');
+      }
+    }
+  }, [user]);
 
   // 已登录：显示头像、用户名、退出按钮
   if (user) {
