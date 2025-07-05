@@ -47,6 +47,13 @@ export default function LandingPage() {
                 >
                   查看历史记录
                 </Link>
+                <Link
+                  href="/stats"
+                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-teal-700 bg-teal-50 border-2 border-teal-200 rounded-lg hover:bg-teal-100 dark:text-teal-300 dark:bg-teal-900/20 dark:border-teal-700 dark:hover:bg-teal-900/30 transition-all duration-300"
+                >
+                  <BarChart3 className="w-5 h-5 mr-2" />
+                  查看统计
+                </Link>
               </div>
               
               <div className="flex items-center space-x-8 text-sm text-gray-500 dark:text-gray-400">

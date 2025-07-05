@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase";
 import Image from "next/image";
+import { BarChart3 } from "lucide-react";
 import { getLocalLogs, clearLocalLogs } from '@/lib/storage';
 import { uploadLogToCloud, cloudHasLog } from '@/lib/supabase'; // 你需要实现这两个方法
 
@@ -76,7 +77,7 @@ export default function UserNav() {
     }
   }, [user]);
 
-  // 已登录：显示头像、用户名、退出按钮
+  // 已登录：显示头像、用户名、导航链接、退出按钮
   if (user) {
     return (
       <div className="flex items-center gap-4 bg-white/80 dark:bg-gray-800/80 px-4 py-1 rounded-full shadow border border-gray-200 dark:border-gray-700">
@@ -98,6 +99,13 @@ export default function UserNav() {
         <span className="text-gray-800 dark:text-white font-medium max-w-[120px] truncate text-base">
           {user.user_metadata?.name || user.email}
         </span>
+        <Link
+          href="/stats"
+          className="flex items-center gap-1 text-teal-600 hover:text-teal-700 px-2 py-1 rounded text-sm font-medium transition-colors"
+        >
+          <BarChart3 className="w-4 h-4" />
+          统计
+        </Link>
         <button
           onClick={handleLogout}
           className="ml-2 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-1 rounded transition text-base font-medium"

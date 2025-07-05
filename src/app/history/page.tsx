@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { BarChart3 } from 'lucide-react';
 import { getLogs, deleteLog, LogEntry } from '@/lib/storage';
 import { getSupabaseClient } from '@/lib/supabase';
 import { getCloudLogs, deleteCloudLog } from '@/lib/supabase';
@@ -63,6 +64,13 @@ export default function HistoryPage() {
           <h1 className="text-3xl font-bold text-gray-800">
             我的历史日志
           </h1>
+          <Link 
+            href="/stats" 
+            className="inline-flex items-center px-4 py-2 text-sm font-semibold text-teal-700 bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 transition-colors duration-200"
+          >
+            <BarChart3 className="w-4 h-4 mr-2" />
+            查看统计
+          </Link>
         </div>
         
         <div className="absolute top-6 right-8 z-50">
@@ -77,6 +85,15 @@ export default function HistoryPage() {
             <p className="mt-2 text-sm text-gray-400">
               快去<Link href="/" className="text-teal-500 hover:underline">写下第一篇</Link>吧！
             </p>
+            <div className="mt-4">
+              <Link 
+                href="/stats" 
+                className="inline-flex items-center px-3 py-1 text-sm text-teal-600 bg-teal-50 border border-teal-200 rounded-md hover:bg-teal-100 transition-colors duration-200"
+              >
+                <BarChart3 className="w-3 h-3 mr-1" />
+                查看统计
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="space-y-6">
