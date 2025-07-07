@@ -203,9 +203,21 @@ export default function EditPage() {
               </select>
             </div>
           </div>
-          <FormField id="gains" label="3、今日收获" subLabel="你今天有哪些新的领悟、技巧提升或重要认知？" placeholder="请填写最少30字" isTextarea/>
-          <FormField id="challenges" label="4、遇到的挑战与解法" subLabel="今天在学习或实践中遇到了哪些卡点？你是如何尝试解决的？" placeholder="请填写最少30字" isTextarea/>
-          <FormField id="plan" label="5、明日计划" subLabel="计划一定要具体，写清楚具体要做哪些事情。" placeholder="请填写最少30字" isTextarea/>
+          <div className="mb-8">
+            <label htmlFor="gains" className="block mb-2 text-lg font-semibold text-gray-800">3、今日收获</label>
+            <p className="text-gray-500 mb-3 text-sm">你今天有哪些新的领悟、技巧提升或重要认知？</p>
+            <textarea id="gains" name="gains" value={formData.gains} onChange={handleInputChange} placeholder="请填写最少30字" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" rows={5} required minLength={30}/>
+          </div>
+          <div className="mb-8">
+            <label htmlFor="challenges" className="block mb-2 text-lg font-semibold text-gray-800">4、遇到的挑战与解法</label>
+            <p className="text-gray-500 mb-3 text-sm">今天在学习或实践中遇到了哪些卡点？你是如何尝试解决的？</p>
+            <textarea id="challenges" name="challenges" value={formData.challenges} onChange={handleInputChange} placeholder="请填写最少30字" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" rows={5} required minLength={30}/>
+          </div>
+          <div className="mb-8">
+            <label htmlFor="plan" className="block mb-2 text-lg font-semibold text-gray-800">5、明日计划</label>
+            <p className="text-gray-500 mb-3 text-sm">计划一定要具体，写清楚具体要做哪些事情。</p>
+            <textarea id="plan" name="plan" value={formData.plan} onChange={handleInputChange} placeholder="请填写最少30字" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" rows={5} required minLength={30}/>
+          </div>
           <div className="mt-10 flex gap-4">
             <button type="submit" className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-colors duration-300">
               保存更改
