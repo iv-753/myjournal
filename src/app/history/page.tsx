@@ -57,6 +57,17 @@ export default function HistoryPage() {
 
   const buttonStyle = "inline-block text-center text-sm font-semibold px-3 py-1 rounded-md transition-colors duration-200 border bg-white border-gray-300 text-gray-700";
 
+  // 新增格式化函数
+  function formatDuration(totalMinutes: number): string {
+    if (!totalMinutes || totalMinutes === 0) return '0 分钟';
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    let result = '';
+    if (hours > 0) result += `${hours} 小时`;
+    if (minutes > 0) result += (hours > 0 ? ' ' : '') + `${minutes} 分钟`;
+    return result;
+  }
+
   return (
     <main className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -108,7 +119,7 @@ export default function HistoryPage() {
                         hour: '2-digit', minute: '2-digit', hour12: false
                       })}
                       {' - '}
-                      {log.workTime.duration} {log.workTime.unit === 'hours' ? '小时' : '分钟'}
+                      {formatDuration(Number(log.workTime.duration))}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">

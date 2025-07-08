@@ -28,6 +28,9 @@ const initialFormData: FormData = {
 
 export default function LogPage() {
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  // 新增：小时和分钟的本地状态
+  const [workHour, setWorkHour] = useState('');
+  const [workMinute, setWorkMinute] = useState('');
   const [projectNames, setProjectNames] = useState<string[]>([]);
   const [user, setUser] = useState<User | null>(null); // 当前用户
   const [loading, setLoading] = useState(true); // 加载状态
@@ -77,26 +80,21 @@ export default function LogPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
   
-  const handleWorkTimeChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      workTime: {
-        ...prev.workTime,
-        [name]: value, // 直接存字符串
-      },
-    }));
+  // 修改工作时间输入处理
+  const handleWorkHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWorkHour(e.target.value.replace(/[^\d]/g, ''));
+  };
+  const handleWorkMinuteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWorkMinute(e.target.value.replace(/[^\d]/g, ''));
   };
 
-  // 提交表单，自动判断本地/云端
+  // 提交时合并小时和分钟为总分钟数
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('handleSubmit user:', user); // 调试用，查看当前 user 状态
-    // 校验时转为数字
-    const durationNum = Number(formData.workTime.duration);
-    if (!durationNum || durationNum <= 0) {
+    const hour = parseInt(workHour || '0', 10);
+    const minute = parseInt(workMinute || '0', 10);
+    const totalMinutes = hour * 60 + minute;
+    if (!totalMinutes || totalMinutes <= 0) {
       alert('请输入有效的工作时长！');
       return;
     }
@@ -105,35 +103,35 @@ export default function LogPage() {
       return;
     }
     if (user) {
-      // 登录，保存到云端
-      console.log('准备调用 addCloudLog', formData, user.id);
       const success = await addCloudLog({
         ...formData,
         workTime: {
-          duration: durationNum, // 这里转为数字
-          unit: formData.workTime.unit,
+          duration: totalMinutes,
+          unit: 'minutes',
         },
         createdAt: new Date().toISOString(),
       }, user.id);
-      console.log('addCloudLog 返回值:', success);
       if (success) {
         alert('日志已成功保存到云端！');
         setFormData(initialFormData);
+        setWorkHour('');
+        setWorkMinute('');
       } else {
         alert('保存失败！今天您已经为这个项目提交过日志了。');
       }
     } else {
-      // 未登录，保存到本地
       const wasSaved = saveLog({
         ...formData,
         workTime: {
-          duration: Number(formData.workTime.duration),
-          unit: formData.workTime.unit,
+          duration: totalMinutes,
+          unit: 'minutes',
         }
       });
       if (wasSaved) {
         alert('日志已成功保存在您的浏览器中！');
         setFormData(initialFormData);
+        setWorkHour('');
+        setWorkMinute('');
       } else {
         alert('保存失败！今天您已经为这个项目提交过日志了。');
       }
@@ -186,24 +184,27 @@ export default function LogPage() {
             <div className="flex items-center gap-2">
               <input
                 type="number"
-                id="workTime"
-                name="duration"
-                value={formData.workTime.duration}
-                onChange={handleWorkTimeChange}
-                placeholder="例如：8"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                id="workHour"
+                name="workHour"
+                value={workHour}
+                onChange={handleWorkHourChange}
+                placeholder="小时"
+                className="w-1/2 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                 min="0"
-                required
               />
-              <select
-                name="unit"
-                value={formData.workTime.unit}
-                onChange={handleWorkTimeChange}
-                className="px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
-              >
-                <option value="hours">小时</option>
-                <option value="minutes">分钟</option>
-              </select>
+              <span>小时</span>
+              <input
+                type="number"
+                id="workMinute"
+                name="workMinute"
+                value={workMinute}
+                onChange={handleWorkMinuteChange}
+                placeholder="分钟"
+                className="w-1/2 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                min="0"
+                max="59"
+              />
+              <span>分钟</span>
             </div>
           </div>
           <div className="mb-8">
