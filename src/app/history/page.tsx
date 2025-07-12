@@ -119,7 +119,7 @@ export default function HistoryPage() {
                         hour: '2-digit', minute: '2-digit', hour12: false
                       })}
                       {' - '}
-                      {formatDuration(Number(log.workTime.duration))}
+                      {formatDuration(Number(log.workTime?.duration ?? 0))}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -142,15 +142,15 @@ export default function HistoryPage() {
                 <div className="space-y-4">
                   <div>
                     <h3 className="font-semibold text-gray-700">今日收获</h3>
-                    <p className="text-gray-600 whitespace-pre-wrap">{log.gains}</p>
+                    <p className="text-gray-600 whitespace-pre-wrap">{log.gains ?? ''}</p>
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-700">遇到的挑战与解法</h3>
-                    <p className="text-gray-600 whitespace-pre-wrap">{log.challenges}</p>
+                    <p className="text-gray-600 whitespace-pre-wrap">{log.challenges ?? ''}</p>
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-700">明日计划</h3>
-                    <p className="text-gray-600 whitespace-pre-wrap">{log.plan}</p>
+                    <p className="text-gray-600 whitespace-pre-wrap">{log.plan ?? ''}</p>
                   </div>
                 </div>
               </div>
