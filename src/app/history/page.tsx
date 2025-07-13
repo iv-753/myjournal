@@ -10,6 +10,16 @@ import { getCloudLogs, deleteCloudLog } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
 import UserNav from "../UserNav";
 
+type SupabaseLog = {
+  id: string;
+  project: string;
+  work_time: { duration: number; unit: 'hours' | 'minutes' };
+  created_at: string;
+  gains?: string;
+  challenges?: string;
+  plan?: string;
+};
+
 export default function HistoryPage() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [user, setUser] = useState<User | null>(null);
@@ -34,7 +44,17 @@ export default function HistoryPage() {
       setLoading(true);
       if (user) {
         const cloudLogs = await getCloudLogs(user.id);
-        setLogs(cloudLogs);
+        // 新增：将 work_time 映射为 workTime，created_at 映射为 createdAt
+        const mappedLogs = (cloudLogs as unknown as SupabaseLog[]).map((log): LogEntry => ({
+          id: log.id,
+          project: log.project,
+          workTime: log.work_time,
+          createdAt: log.created_at,
+          gains: log.gains ?? '',
+          challenges: log.challenges ?? '',
+          plan: log.plan ?? '',
+        }));
+        setLogs(mappedLogs);
       } else {
         setLogs(getLogs().reverse());
       }

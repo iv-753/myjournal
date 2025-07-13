@@ -19,6 +19,16 @@ type FormData = {
   plan: string;
 };
 
+type SupabaseLog = {
+  id: string;
+  project: string;
+  work_time: { duration: number; unit: 'hours' | 'minutes' };
+  created_at: string;
+  gains?: string;
+  challenges?: string;
+  plan?: string;
+};
+
 export default function EditPage() {
   const [formData, setFormData] = useState<FormData | null>(null);
   const [originalLog, setOriginalLog] = useState<LogEntry | null>(null);
@@ -48,18 +58,35 @@ export default function EditPage() {
   }, []);
 
   useEffect(() => {
+    // 只有 user !== undefined 时才执行 fetchLog
+    if (typeof user === 'undefined') return;
     async function fetchLog() {
       setIsLoading(true);
-      if (!id) return;
+      setError(null); // 新增：每次加载前清理错误
+      if (!id) {
+        setError('参数错误，缺少日志ID。');
+        setIsLoading(false);
+        return;
+      }
       if (user) {
         const cloudLogs = await getCloudLogs(user.id);
-        const log = cloudLogs.find(l => l.id === id);
+        // 新增：将 work_time 映射为 workTime，created_at 映射为 createdAt
+        const mappedLogs = (cloudLogs as unknown as SupabaseLog[]).map((l): LogEntry => ({
+          id: l.id,
+          project: l.project,
+          workTime: l.work_time,
+          createdAt: l.created_at,
+          gains: l.gains ?? '',
+          challenges: l.challenges ?? '',
+          plan: l.plan ?? '',
+        }));
+        const log = mappedLogs.find(l => l.id === id);
         if (log) {
           setOriginalLog(log);
           setFormData({
             project: log.project,
             workTime: {
-              duration: log.workTime.duration,
+              duration: log.workTime?.duration ?? 0,
               unit: 'minutes',
             },
             gains: log.gains,
@@ -67,8 +94,8 @@ export default function EditPage() {
             plan: log.plan
           });
           // 拆分分钟为小时和分钟
-          const hour = Math.floor(Number(log.workTime.duration) / 60);
-          const minute = Number(log.workTime.duration) % 60;
+          const hour = Math.floor(Number(log.workTime?.duration ?? 0) / 60);
+          const minute = Number(log.workTime?.duration ?? 0) % 60;
           setWorkHour(hour ? String(hour) : '');
           setWorkMinute(minute ? String(minute) : '');
         } else {
@@ -81,7 +108,7 @@ export default function EditPage() {
           setFormData({
             project: log.project,
             workTime: {
-              duration: log.workTime.duration,
+              duration: log.workTime?.duration ?? 0,
               unit: 'minutes',
             },
             gains: log.gains,
@@ -89,8 +116,8 @@ export default function EditPage() {
             plan: log.plan
           });
           // 拆分分钟为小时和分钟
-          const hour = Math.floor(Number(log.workTime.duration) / 60);
-          const minute = Number(log.workTime.duration) % 60;
+          const hour = Math.floor(Number(log.workTime?.duration ?? 0) / 60);
+          const minute = Number(log.workTime?.duration ?? 0) % 60;
           setWorkHour(hour ? String(hour) : '');
           setWorkMinute(minute ? String(minute) : '');
         } else {

@@ -140,8 +140,6 @@ export default function LogPage() {
 
   return (
     <main className="flex items-center justify-center min-h-screen bg-gray-50">
-      {/* 调试用：页面顶部显示 user 信息 */}
-      {user && <pre style={{background:'#eee',padding:'8px',borderRadius:'6px',marginBottom:'16px'}}>{JSON.stringify(user, null, 2)}</pre>}
       <div className="w-full max-w-2xl mx-auto p-6 md:p-8 my-8 bg-white rounded-xl shadow-md">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">每日日志</h1>

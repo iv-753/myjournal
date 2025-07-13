@@ -25,6 +25,16 @@ function formatDuration(totalMinutes: number): string {
   return result.trim();
 }
 
+type SupabaseLog = {
+  id: string;
+  project: string;
+  work_time: { duration: number; unit: 'hours' | 'minutes' };
+  created_at: string;
+  gains?: string;
+  challenges?: string;
+  plan?: string;
+};
+
 export default function StatsPage() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [selectedProject, setSelectedProject] = useState<string>('');
@@ -55,7 +65,17 @@ export default function StatsPage() {
       if (user) {
         // 已登录，拉取云端日志
         const cloudLogs = await getCloudLogs(user.id);
-        setLogs(cloudLogs);
+        // 新增：将 work_time 映射为 workTime，created_at 映射为 createdAt
+        const mappedLogs = (cloudLogs as unknown as SupabaseLog[]).map((log): LogEntry => ({
+          id: log.id,
+          project: log.project,
+          workTime: log.work_time,
+          createdAt: log.created_at,
+          gains: log.gains ?? '',
+          challenges: log.challenges ?? '',
+          plan: log.plan ?? '',
+        }));
+        setLogs(mappedLogs);
       } else {
         // 未登录，拉取本地日志
         setLogs(getLogs());
@@ -83,9 +103,11 @@ export default function StatsPage() {
     const projectLogs = logs.filter(log => log.project.trim() === selectedProject);
 
     const totalMinutes = projectLogs.reduce((total, log) => {
-        const durationInMinutes = log.workTime.unit === 'hours' 
-          ? log.workTime.duration * 60 
-          : log.workTime.duration;
+        const durationInMinutes = log.workTime && log.workTime.unit
+          ? (log.workTime.unit === 'hours' 
+              ? log.workTime.duration * 60 
+              : log.workTime.duration)
+          : 0;
         return total + durationInMinutes;
       }, 0);
       
