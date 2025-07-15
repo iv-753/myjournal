@@ -73,7 +73,7 @@ export async function addCloudLog(log: Omit<LogEntry, 'id'> & { createdAt?: stri
     gains: log.gains,
     challenges: log.challenges,
     plan: log.plan,
-    created_at: log.createdAt || new Date().toISOString(),
+    created_at: new Date().toISOString(), // 总是使用当前时间，确保一致性
     user_id: userId
   };
   // 调试输出

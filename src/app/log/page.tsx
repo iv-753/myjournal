@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { saveLog, getLogs } from '@/lib/storage';
+import { saveSessionLog, getSessionLogs, LogEntry } from '@/lib/storage';
 import { getSupabaseClient } from '@/lib/supabase';
 import { addCloudLog, getCloudLogs } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
@@ -61,10 +61,10 @@ export default function LogPage() {
         ];
         setProjectNames(uniqueProjects);
       } else {
-        // 未登录，拉取本地日志
-        const historicalLogs = getLogs();
+        // 未登录，拉取会话日志
+        const sessionLogs = getSessionLogs();
         const uniqueProjects = [
-          ...new Set(historicalLogs.map(log => log.project.trim()).filter(Boolean))
+          ...new Set(sessionLogs.map((log: LogEntry) => log.project.trim()).filter(Boolean))
         ];
         setProjectNames(uniqueProjects);
       }
@@ -120,7 +120,7 @@ export default function LogPage() {
         alert('保存失败！今天您已经为这个项目提交过日志了。');
       }
     } else {
-      const wasSaved = saveLog({
+      const wasSaved = saveSessionLog({
         ...formData,
         workTime: {
           duration: totalMinutes,
@@ -128,7 +128,7 @@ export default function LogPage() {
         }
       });
       if (wasSaved) {
-        alert('日志已成功保存在您的浏览器中！');
+        alert('日志已成功保存在当前会话中！关闭浏览器后数据将清除。');
         setFormData(initialFormData);
         setWorkHour('');
         setWorkMinute('');
@@ -147,6 +147,32 @@ export default function LogPage() {
             查看历史 &rarr;
           </Link>
         </div>
+        
+        {/* 未登录状态提示 */}
+        {!user && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-blue-800">
+                  临时存储模式
+                </h3>
+                <div className="mt-2 text-sm text-blue-700">
+                  <p>您当前未登录，日志将保存在当前浏览器会话中。关闭浏览器后数据将自动清除。</p>
+                  <p className="mt-1">
+                    <Link href="/login" className="font-medium underline hover:text-blue-600">
+                      登录后数据将永久保存到云端
+                    </Link>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         {/* 加载中效果 */}
         {loading ? (
           <div className="text-center py-16 bg-white rounded-lg shadow-md">加载中...</div>

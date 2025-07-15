@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase";
 import Image from "next/image";
 import { BarChart3 } from "lucide-react";
-import { getLocalLogs, clearLocalLogs } from '@/lib/storage';
-import { uploadLogToCloud, cloudHasLog } from '@/lib/supabase'; // 你需要实现这两个方法
+import { hasSessionLogs } from '@/lib/storage';
+import SaveDataModal from '@/components/SaveDataModal';
 
 /**
  * 用户导航栏组件：显示用户头像、用户名、登录/退出按钮
@@ -54,65 +54,60 @@ export default function UserNav() {
     </svg>
   );
 
-  // 登录成功后
+  const [showSaveModal, setShowSaveModal] = useState(false);
+
+  // 登录成功后检查会话数据
   useEffect(() => {
-    if (user) { // user 为当前登录用户对象
-      // 检查本地是否有日志
-      const localLogs = getLocalLogs();
-      if (localLogs.length > 0) {
-        // 遍历本地日志
-        localLogs.forEach(async (log) => {
-          // 检查云端是否已有该日志（根据唯一ID）
-          const exists = await cloudHasLog(log.id, user.id);
-          if (!exists) {
-            // 上传日志到云端，带上用户ID
-            await uploadLogToCloud(log, user.id);
-          }
-        });
-        // 全部上传后清空本地日志
-        clearLocalLogs();
-        // 可选：提示用户同步完成
-        alert('本地日志已同步到云端！');
-      }
+    if (user && hasSessionLogs()) {
+      setShowSaveModal(true);
     }
   }, [user]);
 
   // 已登录：显示头像、用户名、导航链接、退出按钮
   if (user) {
     return (
-      <div className="flex items-center gap-4 bg-white/80 dark:bg-gray-800/80 px-4 py-1 rounded-full shadow border border-gray-200 dark:border-gray-700">
-        {/* 头像优化：加载失败或无头像时显示默认SVG */}
-        {user.user_metadata?.avatar_url && !imgError ? (
-          <Image
-            src={user.user_metadata.avatar_url}
-            alt="avatar"
-            width={36}
-            height={36}
-            className="w-9 h-9 rounded-full border object-cover"
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          <span className="w-9 h-9 rounded-full border bg-gray-100 flex items-center justify-center overflow-hidden">
-            {DefaultAvatar}
+      <>
+        <div className="flex items-center gap-4 bg-white/80 dark:bg-gray-800/80 px-4 py-1 rounded-full shadow border border-gray-200 dark:border-gray-700">
+          {/* 头像优化：加载失败或无头像时显示默认SVG */}
+          {user.user_metadata?.avatar_url && !imgError ? (
+            <Image
+              src={user.user_metadata.avatar_url}
+              alt="avatar"
+              width={36}
+              height={36}
+              className="w-9 h-9 rounded-full border object-cover"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <span className="w-9 h-9 rounded-full border bg-gray-100 flex items-center justify-center overflow-hidden">
+              {DefaultAvatar}
+            </span>
+          )}
+          <span className="text-gray-800 dark:text-white font-medium max-w-[120px] truncate text-base">
+            {user.user_metadata?.name || user.email}
           </span>
-        )}
-        <span className="text-gray-800 dark:text-white font-medium max-w-[120px] truncate text-base">
-          {user.user_metadata?.name || user.email}
-        </span>
-        <Link
-          href="/stats"
-          className="flex items-center gap-1 text-teal-600 hover:text-teal-700 px-2 py-1 rounded text-sm font-medium transition-colors"
-        >
-          <BarChart3 className="w-4 h-4" />
-          统计
-        </Link>
-        <button
-          onClick={handleLogout}
-          className="ml-2 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-1 rounded transition text-base font-medium"
-        >
-          退出
-        </button>
-      </div>
+          <Link
+            href="/stats"
+            className="flex items-center gap-1 text-teal-600 hover:text-teal-700 px-2 py-1 rounded text-sm font-medium transition-colors"
+          >
+            <BarChart3 className="w-4 h-4" />
+            统计
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="ml-2 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-1 rounded transition text-base font-medium"
+          >
+            退出
+          </button>
+        </div>
+        
+        {/* 数据保存弹窗 */}
+        <SaveDataModal
+          isOpen={showSaveModal}
+          onClose={() => setShowSaveModal(false)}
+          user={user}
+        />
+      </>
     );
   }
 

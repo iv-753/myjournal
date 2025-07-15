@@ -161,3 +161,155 @@ export function hasLocalLogs(): boolean {
   const logs = getLocalLogs();
   return logs.length > 0;
 } 
+
+// 会话存储相关函数（用于未登录用户）
+const SESSION_STORAGE_KEY = 'temp-logs';
+
+/**
+ * 获取会话存储中的临时日志
+ * 这些日志在关闭浏览器标签页后会自动清除
+ */
+export function getSessionLogs(): LogEntry[] {
+  try {
+    if (typeof window === 'undefined') return [];
+    const rawData = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
+    if (!rawData) {
+      return [];
+    }
+    return JSON.parse(rawData) as LogEntry[];
+  } catch (error) {
+    console.error('Failed to parse logs from sessionStorage', error);
+    return [];
+  }
+}
+
+/**
+ * 保存日志到会话存储（用于未登录用户）
+ */
+export function saveSessionLog(newLog: Omit<LogEntry, 'id' | 'createdAt'>): boolean {
+  try {
+    if (typeof window === 'undefined') return false;
+    const existingLogs = getSessionLogs();
+    const today = new Date().toDateString();
+
+    const isDuplicate = existingLogs.some(log => 
+      log.project.trim() === newLog.project.trim() &&
+      new Date(log.createdAt).toDateString() === today
+    );
+
+    if (isDuplicate) {
+      console.warn('Duplicate log entry for this project today.');
+      return false;
+    }
+
+    const logToAdd: LogEntry = {
+      ...newLog,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+    };
+    const updatedLogs = [...existingLogs, logToAdd];
+    window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(updatedLogs));
+    return true;
+  } catch (error) {
+    console.error('Failed to save log to sessionStorage', error);
+    return false;
+  }
+}
+
+/**
+ * 更新会话存储中的日志
+ */
+export function updateSessionLog(updatedLog: LogEntry): boolean {
+  try {
+    if (typeof window === 'undefined') return false;
+    const existingLogs = getSessionLogs();
+    const logDate = new Date(updatedLog.createdAt).toDateString();
+
+    const hasConflict = existingLogs.some(log => 
+      log.id !== updatedLog.id &&
+      log.project.trim() === updatedLog.project.trim() &&
+      new Date(log.createdAt).toDateString() === logDate
+    );
+
+    if (hasConflict) {
+      console.warn('Update failed: A log for this project already exists on this day.');
+      return false;
+    }
+
+    const logIndex = existingLogs.findIndex(log => log.id === updatedLog.id);
+    if (logIndex === -1) {
+      console.error('Update failed: Log to update not found.');
+      return false;
+    }
+
+    const updatedLogs = [...existingLogs];
+    updatedLogs[logIndex] = updatedLog;
+    window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(updatedLogs));
+    return true;
+  } catch (error) {
+    console.error('Failed to update log in sessionStorage', error);
+    return false;
+  }
+}
+
+/**
+ * 删除会话存储中的日志
+ */
+export function deleteSessionLog(logId: string): void {
+  try {
+    if (typeof window === 'undefined') return;
+    const existingLogs = getSessionLogs();
+    const updatedLogs = existingLogs.filter((log) => log.id !== logId);
+    window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(updatedLogs));
+  } catch (error) {
+    console.error('Failed to delete log from sessionStorage', error);
+  }
+}
+
+/**
+ * 清空会话存储中的日志
+ */
+export function clearSessionLogs(): void {
+  try {
+    if (typeof window === 'undefined') return;
+    window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
+  } catch (error) {
+    console.error('Failed to clear session logs', error);
+  }
+}
+
+/**
+ * 检查会话存储中是否有日志
+ */
+export function hasSessionLogs(): boolean {
+  const logs = getSessionLogs();
+  return logs.length > 0;
+}
+
+/**
+ * 下载会话日志为JSON文件
+ */
+export function downloadSessionLogs(): void {
+  try {
+    const logs = getSessionLogs();
+    if (logs.length === 0) {
+      alert('没有可下载的日志');
+      return;
+    }
+
+    const blob = new Blob([JSON.stringify(logs, null, 2)], { 
+      type: 'application/json' 
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `logs-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Failed to download session logs', error);
+    alert('下载失败');
+  }
+} 
