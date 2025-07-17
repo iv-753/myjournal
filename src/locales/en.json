@@ -1,0 +1,135 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "back": "Back"
+  },
+  "nav": {
+    "home": "Home",
+    "log": "Write Log",
+    "history": "History",
+    "stats": "Statistics",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "home": {
+    "title": "Quantify Your Efforts, Record Your Growth",
+    "subtitle": "A simple and efficient daily logging tool to help you track project progress, reflect on challenges and gains, and build consistent recording habits.",
+    "startLogging": "Start My First Log",
+    "viewHistory": "View History",
+    "viewStats": "View Statistics",
+    "features": {
+      "title": "Why Choose Our Tool?",
+      "subtitle": "Designed for users who pursue efficiency and personal growth, making recording simple and effective"
+    }
+  },
+  "log": {
+    "title": "Daily Log",
+    "viewHistory": "View History",
+    "tempStorage": {
+      "title": "Temporary Storage Mode",
+      "description": "You are not logged in. Your logs will be saved in the current browser session and will be automatically cleared when you close the browser.",
+      "loginPrompt": "Login to save your data permanently to the cloud"
+    },
+    "form": {
+      "project": {
+        "label": "1. Project/Task",
+        "description": "What project or task were you mainly working on today?",
+        "placeholder": "e.g., Developing login feature for XX project"
+      },
+      "workTime": {
+        "label": "2. Today's Work Time",
+        "description": "Estimate how much time you invested today.",
+        "hours": "hours",
+        "minutes": "minutes",
+        "hoursPlaceholder": "Hours",
+        "minutesPlaceholder": "Minutes"
+      },
+      "gains": {
+        "label": "3. Today's Gains",
+        "description": "What new insights, skill improvements, or important realizations did you have today?",
+        "placeholder": "Please write at least 30 characters"
+      },
+      "challenges": {
+        "label": "4. Challenges and Solutions",
+        "description": "What obstacles did you encounter in learning or practice today? How did you try to solve them?",
+        "placeholder": "Please write at least 30 characters"
+      },
+      "plan": {
+        "label": "5. Tomorrow's Plan",
+        "description": "Plans must be specific. Write clearly what specific things you want to do.",
+        "placeholder": "Please write at least 30 characters"
+      },
+      "submit": "Save Log"
+    },
+    "alerts": {
+      "invalidWorkTime": "Please enter a valid work duration!",
+      "minLength": "'Today's Gains', 'Challenges and Solutions', and 'Tomorrow's Plan' all need to be at least 30 characters long!",
+      "cloudSaveSuccess": "Log has been successfully saved to the cloud!",
+      "sessionSaveSuccess": "Log has been successfully saved in the current session! Data will be cleared when the browser is closed.",
+      "saveFailed": "Save failed! You have already submitted a log for this project today."
+    }
+  },
+  "history": {
+    "title": "My Log History",
+    "viewStats": "View Statistics",
+    "empty": {
+      "title": "No log records yet.",
+      "subtitle": "Go write your first one!"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "deleteConfirm": "Are you sure you want to permanently delete this log?",
+    "sections": {
+      "gains": "Today's Gains",
+      "challenges": "Challenges and Solutions",
+      "plan": "Tomorrow's Plan"
+    },
+    "duration": {
+      "hours": "hours",
+      "minutes": "minutes"
+    }
+  },
+  "stats": {
+    "title": "Project Duration Statistics",
+    "backToHistory": "Back to History",
+    "selectProject": "Please select a project:",
+    "selectPlaceholder": "-- Select Project --",
+    "projectStats": "Statistics for project \"{project}\":",
+    "metrics": {
+      "totalDuration": "Total Work Duration",
+      "workingDays": "Total Working Days",
+      "streak": "Consecutive Working Days",
+      "days": "days"
+    }
+  },
+  "login": {
+    "title": "Sign in to your account",
+    "googleLogin": "Sign in with Google",
+    "githubLogin": "Sign in with GitHub"
+  },
+  "edit": {
+    "title": "Edit Log",
+    "backToHistory": "Back to History",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "noFormData": "Unable to load form data.",
+    "errors": {
+      "missingId": "Parameter error, missing log ID.",
+      "notFound": "The specified log record was not found."
+    },
+    "alerts": {
+      "invalidWorkTime": "Please enter a valid work duration!",
+      "minLength": "'Today's Gains', 'Challenges and Solutions', and 'Tomorrow's Plan' all need to be at least 30 characters long!",
+      "updateSuccess": "Log updated successfully!",
+      "updateFailed": "Update failed! There may already be a log for a project with the same name on that day."
+    }
+  }
+}

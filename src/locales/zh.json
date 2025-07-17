@@ -1,0 +1,135 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "save": "保存",
+    "cancel": "取消",
+    "edit": "编辑",
+    "delete": "删除",
+    "confirm": "确认",
+    "back": "返回"
+  },
+  "nav": {
+    "home": "首页",
+    "log": "写日志",
+    "history": "历史记录",
+    "stats": "统计",
+    "login": "登录",
+    "logout": "退出登录"
+  },
+  "home": {
+    "title": "量化你的努力，记录你的成长",
+    "subtitle": "一个简洁、高效的每日日志工具，帮助你追踪项目进展，复盘挑战与收获，养成持续记录的好习惯。",
+    "startLogging": "开始我的第一篇日志",
+    "viewHistory": "查看历史记录",
+    "viewStats": "查看统计",
+    "features": {
+      "title": "为什么选择我们的工具？",
+      "subtitle": "专为追求效率和个人成长的用户设计，让记录变得简单而有效"
+    }
+  },
+  "log": {
+    "title": "每日日志",
+    "viewHistory": "查看历史",
+    "tempStorage": {
+      "title": "临时存储模式",
+      "description": "您当前未登录，日志将保存在当前浏览器会话中。关闭浏览器后数据将自动清除。",
+      "loginPrompt": "登录后数据将永久保存到云端"
+    },
+    "form": {
+      "project": {
+        "label": "1、事项/项目",
+        "description": "今天主要在忙什么项目或任务？",
+        "placeholder": "例如：开发XX项目的登录功能"
+      },
+      "workTime": {
+        "label": "2、今日工作时间",
+        "description": "预估一下今天投入了多长时间。",
+        "hours": "小时",
+        "minutes": "分钟",
+        "hoursPlaceholder": "小时",
+        "minutesPlaceholder": "分钟"
+      },
+      "gains": {
+        "label": "3、今日收获",
+        "description": "你今天有哪些新的领悟、技巧提升或重要认知？",
+        "placeholder": "请填写最少30字"
+      },
+      "challenges": {
+        "label": "4、遇到的挑战与解法",
+        "description": "今天在学习或实践中遇到了哪些卡点？你是如何尝试解决的？",
+        "placeholder": "请填写最少30字"
+      },
+      "plan": {
+        "label": "5、明日计划",
+        "description": "计划一定要具体，写清楚具体要做哪些事情。",
+        "placeholder": "请填写最少30字"
+      },
+      "submit": "保存日志"
+    },
+    "alerts": {
+      "invalidWorkTime": "请输入有效的工作时长！",
+      "minLength": "「今日收获」、「挑战与解法」和「明日计划」都需要填写至少30个字哦！",
+      "cloudSaveSuccess": "日志已成功保存到云端！",
+      "sessionSaveSuccess": "日志已成功保存在当前会话中！关闭浏览器后数据将清除。",
+      "saveFailed": "保存失败！今天您已经为这个项目提交过日志了。"
+    }
+  },
+  "history": {
+    "title": "我的历史日志",
+    "viewStats": "查看统计",
+    "empty": {
+      "title": "还没有任何日志记录。",
+      "subtitle": "快去写下第一篇吧！"
+    },
+    "actions": {
+      "edit": "编辑",
+      "delete": "删除"
+    },
+    "deleteConfirm": "您确定要永久删除这条日志吗？",
+    "sections": {
+      "gains": "今日收获",
+      "challenges": "遇到的挑战与解法",
+      "plan": "明日计划"
+    },
+    "duration": {
+      "hours": "小时",
+      "minutes": "分钟"
+    }
+  },
+  "stats": {
+    "title": "项目时长统计",
+    "backToHistory": "返回历史",
+    "selectProject": "请选择一个项目：",
+    "selectPlaceholder": "-- 选择项目 --",
+    "projectStats": "项目 \"{project}\" 的统计数据：",
+    "metrics": {
+      "totalDuration": "总工作时长",
+      "workingDays": "总工作天数",
+      "streak": "连续工作天数",
+      "days": "天"
+    }
+  },
+  "login": {
+    "title": "登录到你的账号",
+    "googleLogin": "使用 Google 登录",
+    "githubLogin": "使用 GitHub 登录"
+  },
+  "edit": {
+    "title": "编辑日志",
+    "backToHistory": "返回历史",
+    "saveChanges": "保存更改",
+    "cancel": "取消",
+    "loading": "加载中...",
+    "noFormData": "无法加载表单数据。",
+    "errors": {
+      "missingId": "参数错误，缺少日志ID。",
+      "notFound": "找不到指定的日志记录。"
+    },
+    "alerts": {
+      "invalidWorkTime": "请输入有效的工作时长！",
+      "minLength": "「今日收获」、「挑战与解法」和「明日计划」都需要填写至少30个字哦！",
+      "updateSuccess": "日志更新成功！",
+      "updateFailed": "更新失败！可能当天已存在同名项目的日志。"
+    }
+  }
+}

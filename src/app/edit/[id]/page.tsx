@@ -35,7 +35,7 @@ export default function EditPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  
+
   const params = useParams();
   const router = useRouter();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -188,7 +188,7 @@ export default function EditPage() {
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center">加载中...</div>;
   }
-  
+
   if (error) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-red-500">
@@ -197,19 +197,19 @@ export default function EditPage() {
       </div>
     );
   }
-  
+
   if (!formData) {
-     return <div className="min-h-screen flex items-center justify-center">无法加载表单数据。</div>;
+    return <div className="min-h-screen flex items-center justify-center">无法加载表单数据。</div>;
   }
 
-  const FormField = ({ id, label, subLabel, placeholder, isTextarea = false }: { id: 'project' | 'gains' | 'challenges' | 'plan'; label: string; subLabel: string; placeholder: string; isTextarea?: boolean;}) => (
+  const FormField = ({ id, label, subLabel, placeholder, isTextarea = false }: { id: 'project' | 'gains' | 'challenges' | 'plan'; label: string; subLabel: string; placeholder: string; isTextarea?: boolean; }) => (
     <div className="mb-8">
       <label htmlFor={id} className="block mb-2 text-lg font-semibold text-gray-800">{label}</label>
       <p className="text-gray-500 mb-3 text-sm">{subLabel}</p>
       {isTextarea ? (
-        <textarea id={id} name={id} value={formData[id]} onChange={handleInputChange} placeholder={placeholder} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" rows={5} required minLength={30}/>
+        <textarea id={id} name={id} value={formData[id]} onChange={handleInputChange} placeholder={placeholder} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" rows={5} required minLength={30} />
       ) : (
-        <input type="text" id={id} name={id} value={formData[id]} onChange={handleInputChange} placeholder={placeholder} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" required/>
+        <input type="text" id={id} name={id} value={formData[id]} onChange={handleInputChange} placeholder={placeholder} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" required />
       )}
     </div>
   );
@@ -262,17 +262,17 @@ export default function EditPage() {
           <div className="mb-8">
             <label htmlFor="gains" className="block mb-2 text-lg font-semibold text-gray-800">3、今日收获</label>
             <p className="text-gray-500 mb-3 text-sm">你今天有哪些新的领悟、技巧提升或重要认知？</p>
-            <textarea id="gains" name="gains" value={formData.gains} onChange={handleInputChange} placeholder="请填写最少30字" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" rows={5} required minLength={30}/>
+            <textarea id="gains" name="gains" value={formData.gains} onChange={handleInputChange} placeholder="请填写最少30字" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" rows={5} required minLength={30} />
           </div>
           <div className="mb-8">
             <label htmlFor="challenges" className="block mb-2 text-lg font-semibold text-gray-800">4、遇到的挑战与解法</label>
             <p className="text-gray-500 mb-3 text-sm">今天在学习或实践中遇到了哪些卡点？你是如何尝试解决的？</p>
-            <textarea id="challenges" name="challenges" value={formData.challenges} onChange={handleInputChange} placeholder="请填写最少30字" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" rows={5} required minLength={30}/>
+            <textarea id="challenges" name="challenges" value={formData.challenges} onChange={handleInputChange} placeholder="请填写最少30字" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" rows={5} required minLength={30} />
           </div>
           <div className="mb-8">
             <label htmlFor="plan" className="block mb-2 text-lg font-semibold text-gray-800">5、明日计划</label>
             <p className="text-gray-500 mb-3 text-sm">计划一定要具体，写清楚具体要做哪些事情。</p>
-            <textarea id="plan" name="plan" value={formData.plan} onChange={handleInputChange} placeholder="请填写最少30字" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" rows={5} required minLength={30}/>
+            <textarea id="plan" name="plan" value={formData.plan} onChange={handleInputChange} placeholder="请填写最少30字" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" rows={5} required minLength={30} />
           </div>
           <div className="mt-10 flex gap-4">
             <button type="submit" className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-colors duration-300">
