@@ -14,13 +14,17 @@ export function getTranslations(locale: Locale) {
 
 export function t(key: string, locale: Locale = 'zh'): string {
   const keys = key.split('.');
-  let value: any = getTranslations(locale);
+  let value: unknown = getTranslations(locale);
   
   for (const k of keys) {
-    value = value?.[k];
+    if (value && typeof value === 'object' && k in value) {
+      value = (value as Record<string, unknown>)[k];
+    } else {
+      return key; // 如果路径不存在，返回原始key
+    }
   }
   
-  return value || key;
+  return typeof value === 'string' ? value : key;
 }
 
 export const supportedLocales: Locale[] = ['zh', 'en'];
